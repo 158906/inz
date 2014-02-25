@@ -1,0 +1,208 @@
+\documentclass[10pt,titlepage]{article}
+
+\usepackage{graphicx}
+\usepackage{graphics}
+\usepackage{epsfig}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{booktabs}
+\usepackage{stmaryrd}
+\usepackage{url}
+\usepackage{longtable}
+\usepackage[figuresright]{rotating}
+
+%\usepackage[MeX]{polski}
+\usepackage[cp1250]{inputenc}
+
+
+\usepackage[T1]{fontenc}
+%\usepackage[latin2]{inputenc}
+\usepackage[polish]{babel}
+
+\usepackage{geometry}
+\usepackage{pslatex}
+\usepackage{ulem}
+
+\usepackage{lipsum}
+
+\usepackage{listings}
+\usepackage{url}
+\usepackage{Here}
+
+\usepackage{color}
+
+\linespread{1.5}
+
+\definecolor{szary}{gray}{0.6}% jasnoszary
+
+\setlength{\textwidth}{400pt}
+\lstset{numbers=left,
+			numberstyle=\tiny, 
+			basicstyle=\scriptsize\ttfamily, 
+			breaklines=true, 
+			captionpos=b, 
+			tabsize=2}
+
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+
+\selectlanguage{polish}
+
+%\vfuzz2pt % Don't report over-full v-boxes if over-edge is small
+%\hfuzz2pt % Don't report over-full h-boxes if over-edge is small
+
+
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\TAB}{\hspace{0.50cm}}
+\newcommand{\IFF}{\leftrightarrow}
+\newcommand{\IMP}{\rightarrow}
+
+\newtheorem{theorem}{Twierdzenie}[section]
+\newtheorem{lemma}{Lemat}[section]
+\newtheorem{example}{Przyk³ad}[section]
+\newtheorem{corollary}{Wniosek}[section]
+\newtheorem{definition}{Definicja}[section]
+
+\makeindex
+
+\begin{document}
+
+\pagestyle{empty}
+
+\begin{titlepage}
+\vspace*{\fill}
+\begin{center}
+\begin{picture}(300,510)
+  \put( 10,520){\makebox(0,0)[l]{\large \bf \textsc{Wydzia³ Podstawowych Problemów Techniki}}}
+  \put( 10,500){\makebox(0,0)[l]{\large \bf \textsc{Politechniki Wroc³awskiej}}}
+  \put( -60,300){\makebox(0,0)[l]{\Huge  \bf \textsc{Praktyczne zastosowania}}}
+  \put( -60,280){\makebox(0,0)[l]{\Huge  \bf \textsc{algorytmów przybli¿onego zliczania}}}
+  \put( 95,220){\makebox(0,0)[l]{\LARGE {Anna Kawecka}}}
+
+  \put(170, 80){\makebox(0,0)[l]{\large  {Praca in¿ynierska napisana}}}
+  \put(170, 60){\makebox(0,0)[l]{\large  {pod kierunkiem}}}
+  \put(170, 40){\makebox(0,0)[l]{\large  {dr in¿. Jakuba Lemiesza}}}
+
+  \put(100,-80){\makebox(0,0)[bl]{\large \bf \textsc{Wroc³aw 2013}}}
+\end{picture}
+\end{center}
+\vspace*{\fill}
+\end{titlepage}
+
+\tableofcontents
+
+\newpage
+
+\pagestyle{headings}
+
+
+\section*{Bibliografia}
+\begin{enumerate}
+\item P. Flajolet , É. Fusy , O. Gandouet, et al., Hyperloglog: The analysis of a near-optimal cardinality estimation algorithm. Aofa ’07: Proceedings of the 2007 International Conference on Analysis of Algorithms, 127-146, 2007.
+\item P. Flajolet and G. N. Martin. Probabilistic counting algorithms for data base applications. Journal of Computer and System Sciences, 31 (2): 182 - 209, 1985.
+\item F. Giroire, Order Statistics and Estimating Cardinalities of massive Data Sets. AofA ’05: Proceedings of the 2005 International Conference on Analysis of Algorithms, 157-166, 2005.
+\item F. Giroire, Directions to use probabilistic algorithms for cardinality for DNA analysis. Journées Ouvertes Biologie Informatique Mathématiques, 2006.
+\item J. Lemiesz, Podstawowe algorytmy dla sieci Ad Hoc. Praca doktorska, Politechnika Wroc³awska, 2012.
+\item K.-Y. Whang, B. T. Vander-Zanden, H. M. Taylor, A Linear-Time Probabilistic Counting Algorithm for Database Applications. ACM Transactions on Database Systems, 15 (2): 208 - 229, 1990. 
+
+
+
+\end{enumerate}
+
+\newpage
+%\section*{Wstêp}
+\section{Wprowadzenie do tematyki algorytmów zliczania. Opis problemu.}
+%\subsection{Opis problemu}
+Problemem, dla którego opracowane zosta³y algorytmy przybli¿onego zliczania by³o oszacowanie liczby ró¿nych elementów $n$ dla bardzo du¿ego zbioru elementów. Nie przyjmuje siê ¿adnych dodatkowych za³o¿eñ dotycz¹cych struktury powtórzeñ elementów w zbiorze. Dok³adne rozwi¹zania tego problemu - zapamiêtywanie kolejnych nowych elementów oraz sprawdzanie dla ka¿dego kolejnego elementu czy ju¿ wyst¹pi³ - zu¿ywaj¹ $O(n)$ pamiêci i $O(N$log$(n))$ czasu, gdzie $N$ jest liczb¹ wszystkich elementów wystêpuj¹cych w rozwa¿anym zbiorze. \cite{Giroire2005}
+\\Omawiane w tej pracy algorytmy nie daj¹ dok³adnego wyniku, jednak ich zaletami s¹: zmniejszenie u¿ywanej pamiêci oraz zmniejszenie liczby wykonywanych operacji na element. Dla wiêkszoœci praktycznych zastosowañ ma³y b³¹d estymacji nie ma znaczenia. Przedstawione algorytmy opieraj¹ siê o pewne fakty statystyczne, które stosuje siê do wartoœci funkcji skrótu (funkcji haszuj¹cej) dla poszczególnych elementów zbioru. 
+\\W pracy zostan¹ omówione trzy algorytmy:
+\begin{itemize}
+\item Probabilistic Counting, (\ref{ProbCount})
+\item HyperLogLog,( \ref{HyperLogLog} )
+\item Minima Counting(\ref{MinCount}).
+\end{itemize}
+Celem tej pracy jest zweryfikowanie jak dzia³aj¹ powy¿sze algorytmy w praktyce oraz ich porównanie. Symulacje zostan¹ przeprowadzone dla kilku wybranych funkcji haszuj¹cych (m.in. SHA-3) na zadanych zbiorach. Wyniki symulacji przedstawione zostan¹ w rozdziale \ref{Symulacja}. 
+\\W rozdziale \ref{Zastosowania} zaœ omówione zostan¹ przyk³ady praktycznych zastosowañ algorytmów przybli¿onego zliczania, w tym wykorzystanie algorytmów przybli¿onego zliczania do badania DNA (ideê t¹ przedstawi³ Giroire w pracy \cite{Giroire2006}). 
+
+\newpage
+\section{Opis wybranych algorytmów}
+
+\subsection{Probabilistic Counting} \label{ProbCount}
+Algorytm Probabilistic Counting opiera siê na spostrze¿eniu, ¿e jeœli wartoœci wynikowe funkcji haszuj¹cej maj¹ rozk³ad jednostajny, to w przybli¿eniu po³owa wartoœci $h(x)$ bêdzie zaczynaæ siê od cyfry 1, jedna czwarta bêdzie zaczynaæ siê od 01 itd. (1 wystêpuje na ka¿dej pozycji z prawdopodobieñstwem 1/2). Niech $\rho (x)$ oznacza pozycjê wyst¹pienia pierwszej jedynki w reprezentacji binarnej wartoœci $h(x)$. Wtedy prawdopodobieñstwo, ¿e $\rho(x) = k$ wynosi $\frac{1}{2^{k}}$. Niech $B=(0,0,…)$ bêdzie wektorem zer. Nastêpnie dla ka¿dego $x$ nale¿¹cego do badanego zbioru artoœæ $B[\rho (x)] = 1$.
+Za estymator liczby ró¿nych elementów zbioru mo¿emy przyj¹æ $2^R$, gdzie
+$R = max\{ k: \forall_{i \in \{ 1,2,…, k\}} B[i] = 1 \}$.
+Ostateczna wersja algorytmu zosta³a zmodyfikowana tak, by zmniejszyæ odchylenie standardowe z $\sigma$ dla pojedynczego eksperymentu do $\sigma / m$ dla œredniej z $m$ eksperymentów. Otrzymanie $m$  wartoœci ró¿nych funkcji haszuj¹cych dla ka¿dego elementu wymaga³oby znajomoœci konstrukcji niezale¿nych funkcji haszuj¹cych oraz zwiêkszenia czasu potrzebnego na wykonanie algorytmu. Rozwi¹zaniem tego problemu jest uœrednianie stochastyczne, które zosta³o przedstawione w pracy Flajoleta (\cite{FlajoletMartin1985}). 
+\\Zalet¹ takiego podejœcia jest nie tylko fakt, ¿e potrzebna jest tylko jedna funkcja haszuj¹ca, ale równie¿ to, ¿e nie wykonuje siê wielu operacji dla ka¿dego elementu zbioru. \\Kolejna poprawka algorytmu wykorzystuje funkcje tworz¹ce i transformatê Mellina, a zwi¹zana jest z obci¹¿eniem estymatora. 
+St¹d 
+$$\hat n := \frac{1}{\varphi } m2^A,$$ gdzie $A$ jest œredni¹ arytmetyczn¹ $R_1,...,R_m$, $\varphi  := \frac{e^\gamma}{\sqrt{2}} \prod_{j=1}^{\infty} (\frac{2j+1}{2j})^{\epsilon (j)} \approx 0.7735$, $\gamma$ oznacza sta³¹ Eulera, a $\epsilon (j) = \pm 1$ wskazuje parzystoœæ liczby wyst¹pieñ 1 w reprezentacji binarnej $j$. 
+\\Tak skonstruowany estymator ma nastêpuj¹ce w³aœciwoœci asymptotyczne (wzglêdem $n$):
+\begin{itemize}
+\item $\frac{E(\hat n)}{n} = 1 + \varepsilon (m) + \delta _1 (m,n) + o(1)$
+\item $SE(\hat n) = \eta (m) + \delta _2 (m,n) + o(1)$
+\end{itemize}
+gdzie $\delta _1, \delta_2$ s¹ pewnymi funkcjami oscylacyjnymi takimi, ¿e $|\delta_1(m,n)| < 10^{-5} $, $|\delta_2(m,n)| < 10^{-5} $ oraz wraz ze wzrostem $m$: $\varepsilon (m) \sim \frac{0.31}{m}$ i $\eta (m) \sim \frac{0.78}{\sqrt {m}}$
+
+\subsection{HyperLogLog} \label{HyperLogLog}
+Pewnym rozwiniêciem metody Probabilistic Counting jest HyperLogLog. Zamiast pamiêtaæ ca³y wektor $B$ ustalany jest licznik $C = max_{x \in M} \rho(x)$. Równie¿ dla tej metody stosuje siê uœrednianie stochastyczne, st¹d potrzebnych jest $m$ takich liczników $C_1, C_2,…,C_m$. G³ówna ró¿nica miêdzy opisywan¹ metod¹ a Probabilistic Counting polega na u¿yciu œredniej harmonicznej zamiast arytmetycznej. Tak skonstruowany estymator jest postaci:
+$$ \hat n := \frac{m}{\alpha_m} \frac{m}{\sum_{j=1}^{m} 2^{-C_{j}}},$$
+gdzie $\alpha_m = \int _0^{\infty } (log(\frac{2+u}{1+u}))^m du = 2log2+O(\frac{1}{m}) $. Estymator ten ma mniejsz¹ wariancjê ni¿ estymator uzyskany metod¹ Probabilistic Counting.
+\\Dla $m \geq 16$ zachodz¹ nastêpuj¹ce w³aœciwoœci asymptotyczne (wzglêdem $n$):
+\begin{itemize}
+\item $\frac{E(\hat n)}{n} = 1 + \delta _1 (n) + o(1)$
+\item $SE(\hat n) = \frac{\beta _m}{\sqrt m} + \delta _2 (n) + o(1)$
+\end{itemize}
+gdzie $|\delta_1(n)| < 10^{-5} $, $|\delta_2(n)| < 10^{-5} $ oraz $\beta _m $ jest pewn¹ sta³¹.
+\newpage
+\subsection{Minima Counting} \label{MinCount}
+Wad¹ opisanych algorytmów Probabilistic Counting i HeyperLogLog, jest niew¹tpliwie fakt, ¿e oba estymatory s¹ obci¹¿one. Wady tej nie posiada ostatni z przedstawianych w tej pracy algorytmów: algorytm opieraj¹cy siê na statystyce pozycyjnej. 
+Podobnie jak dla poprzednich algorytmów ka¿dy element zbioru $M$ przekszta³camy przy pomocy funkcji haszuj¹cej. Wartoœci te traktowane s¹ dalej jako losowe liczby rzeczywiste z przedzia³u $[0,1]$. Dla minimum ($U_{[1:n]}$) zachodzi:
+$$E[U_{[1:n]}] = \int _0^1 xn(1-x)^{n-1} dx = \frac{1}{n+1}.$$
+Mo¿na zatem otrzymaæ aproksymacjê $\hat n$ z powy¿szego wzoru. Wa¿ny jest fakt, ¿e zaobserwowane minimum jest niewra¿liwe na strukturê powtórzeñ w zbiorze. Tak stworzony algorytm zu¿ywa sta³¹ pamiêæ oraz tylko jedn¹ zmienn¹ przechowuj¹c¹ minimum. 
+Podejœcie to ma jednak wady: po pierwsze odchylenie standardowe dla $U_{1:n}$ jest tego samego rzêdu co wartoœæ oczekiwana, a po drugie odwrotnoœæ $U_{1:n}$ ma nieskoñczon¹ wartoœæ oczekiwan¹ (\cite{Giroire2005}, \cite{Lemiesz2012}). ¯eby unikn¹æ tych problemów wystarczy u¿yæ drugiej lub dalszej statystyki pozycyjnej. Dla praktycznych zasotsowañ Giroire w swojej pracy sugeruje statystykê $U_{3:n}$. 
+\\Podobnie jak dla dwóch algorytmów zaprezentowanych wczeœniej, równie¿ dla tego algorytmu mo¿na zastosowaæ uœrednianie stochastyczne, co poprawi dok³adnoœæ estymacji. W tym przypadku $m$ eksperymentów symuluje siê dziel¹c $(0,1)$ na $m$ równych przedzia³ów. Dla ka¿dej wartoœci $h(x)$ liczba $ \lfloor mh(x) -  mh(x) \rfloor$ nale¿y do $i$-tego przedzia³u gdzie $i = \lfloor mh(x) \rfloor  + 1$. Algorytm wybiera $k$-t¹ statystykê pozycyjn¹ z ka¿dego przedzia³u, przy czym, je¿eli w którymœ przedziale znajduje siê mniej ni¿ $k$ wartoœci wtedy $U_{k:n}^{(i)} = 1$. Za estymator licznoœci $\hat n$ mo¿na przyj¹æ:
+$\hat n = \sum _{i=1}^m \frac{k-1}{U_{(k:n)}^{(i)}}$.
+\\Asymptotycznie (wzglêdem $n$) zachodzi:
+$SE(\hat n) =  \frac{1}{\sqrt{k-2}}\frac{1}{\sqrt{m}} $.
+
+\newpage
+\section{Implementacja algorytmów} 
+ \subsection{Probabilistic Counting}
+ \subsection{HyperLogLog}
+ \subsection{Minima Counting}
+
+\section{Porównanie eksperymentalne algorytmów} \label{Symulacja}
+
+\newpage
+\section{Przyk³ady praktycznych zastosowañ} \label{Zastosowania}
+\subsection{Du¿e bazy danych}
+Liczba unikalnych wartoœci w kolumnie jest jedn¹ z podstawowych informacji u¿ywanych do optymalizacji zapytañ oraz przy projektowaniu bazy danych. Dla optymalizacji zapytañ oszacowana liczba wartoœci u¿ywana jest przy wyborze minimalnego pod wzglêdem kosztu planu wykonywania kwerendy. W konstrukcji bazy danych natomiast stosuje siê j¹ do konfiguracji dostêpu, który daje minimalny czas odpowiedzi dla zestawu transakcji u¿ytkownika. Zatem, oszacowanie licznoœci ró¿nych wartoœci w kolumnie
+ma kluczowe znaczenie dla uzyskania dobrej wydajnoœci bazy danych. Jednak pojawianie siê powtórzeñ utrudnia
+otrzymywanie dynamiczne licznoœci w kolumnie przy ka¿dej operacji dodania lub usuniêcia krotki. Problem ten mo¿na zmniejszyæ utrzymuj¹c indeksy kolumn, jednak w wielu praktycznych zastosowaniach, nie tworzy siê indeksów dla wszystkich kolumn. Rozwi¹zaniem tego problemu jest zastosowanie algorytmów zliczania proponowane w pracach ,,Probabilistic counting algorithms for data base applications'' (\cite{Flajolet1985}), ,,A Linear-Time Probabilistic Counting Algorithm for Database Applications''(\cite{Whang1990}). 
+\subsection{Analiza DNA}
+Bardzo ciekawy przyk³ad wykorzystania algorytmów przybli¿onego zliczania zosta³ podany przez Giroire w pracy \cite{Giroire2006}. Algorytmy zliczania u¿yte zosta³y do analizy korelacji w ludzkim genomie. Korelacja mierzona jest poprzez liczbê wyst¹pieñ ró¿nych podci¹gów o ustalonej d³ugoœci $k$ we fragmencie DNA rozmiaru $N$. Fragment z niewieloma ró¿nymi podci¹gami jest bardziej skorelowany ni¿ fragment tego samego rozmiaru, w którym wystêpuje wiêcej ró¿nych podci¹gów. Giroire odpowiada w swojej pracy na trzy pytania: 
+\begin{itemize}
+\item Czy w genomie wystêpuj¹ wszystkie teoretycznie mo¿liwe ,,s³owa'' ($4^k$) czy te¿ niektóre wzorce nie pojawiaj¹ siê?  
+\item Czy genom jest jednorodny czy te¿ niektóre jego fragmenty s¹ bardziej skorelowane ni¿ inne? 
+\item Jaka jest czêstotliwoœæ wystêpowania ró¿nych ,,s³ów'' w genomie (rozumianych jako sekwencja czytana ,,od pocz¹tku''). 
+\end{itemize}
+
+\subsection{Zliczanie obiektów}
+Algorytmy zliczania znajduj¹ równie¿ zastosowanie w problemie aproksymacji liczby osób (lub dowolnych obiektów mobilnych) - mo¿liwe jest monitorowanie ruchu oraz zagêszczenia np. na trasach narciarskich czy imprezach masowych. Zastosowanie algorytmów zliczania pozwala oszacowaæ du¿¹ liczbê osób przy minimalnym zu¿yciu zasobów, a wiêc umo¿liwia implementacjê na s³abych urz¹dzeniach wykorzystuj¹c niewielki obszar pamiêci. Dodatkowo sposób zapamiêtywania informacji spe³nia wymagania ochrony danych osobowych. 
+
+\newpage
+\section*{Podsumowanie}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BIBLIOGRAFIA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \bibliographystyle{plain}
+
+% \bibliography{P2P}
+
+\end{document}
